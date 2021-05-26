@@ -144,3 +144,10 @@ SELECT g.good_name, p.unit_price FROM Payments p
     WHERE gt.good_type_name LIKE 'delicacies'
     ORDER BY p.unit_price DESC
     LIMIT 1
+
+### 24 ###
+###Определить кто и сколько потратил в июне 2005.###
+SELECT fm.member_name, SUM(p.amount * p.unit_price) AS costs FROM FamilyMembers fm
+    JOIN Payments p ON p.family_member = fm.member_id
+    WHERE YEAR(p.date) = 2005 AND MONTH(p.date) = 6
+    GROUP BY fm.member_id
