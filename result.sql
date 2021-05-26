@@ -80,3 +80,19 @@ SELECT t.time_in FROM Trip t
     LEFT JOIN Pass_in_trip pit ON pit.trip = t.id
     LEFT JOIN Passenger p ON p.id = pit.passenger
     WHERE p.name LIKE 'Steve Martin' AND town_to LIKE 'London'
+
+### 16 ###
+###Вывести отсортированный по количеству перелетов (по убыванию) и имени (по возрастанию) список пассажиров, совершивших хотя бы 1 полет.###
+SELECT p.name AS name, COUNT(t.id) AS count FROM Trip t
+    JOIN Pass_in_trip pit ON pit.trip = t.id
+    JOIN Passenger p ON p.id = pit.passenger
+    GROUP BY p.name
+    HAVING COUNT(t.id) > 0
+    ORDER BY count DESC, p.name ASC
+
+### 17 ###
+###Определить, сколько потратил в 2005 году каждый из членов семьи.###
+SELECT fm.member_name, fm.status, SUM(p.amount * p.unit_price) AS costs FROM FamilyMembers fm
+    JOIN Payments p ON p.family_member = fm.member_id
+    WHERE YEAR(p.date) = 2005
+    GROUP BY fm.member_id
