@@ -60,3 +60,23 @@ SELECT t.id AS trip, COUNT(p.id) AS count FROM Trip t
     LEFT JOIN Pass_in_trip p ON p.trip = t.id
     GROUP BY t.id
     HAVING COUNT(p.id) > 0
+
+### 13 ###
+###Вывести id и количество пассажиров для всех прошедших полётов.###
+SELECT name FROM Passenger
+    GROUP BY name
+    HAVING COUNT(name) > 1
+
+### 14 ###
+###В какие города летал Bruce Willis.###
+SELECT town_to FROM Trip t
+    LEFT JOIN Pass_in_trip pit ON pit.trip = t.id
+    LEFT JOIN Passenger p ON p.id = pit.passenger
+    WHERE p.name LIKE 'Bruce Willis'
+
+### 15 ###
+###Во сколько Стив Мартин (Steve Martin) прилетел в Лондон (London).###
+SELECT t.time_in FROM Trip t
+    LEFT JOIN Pass_in_trip pit ON pit.trip = t.id
+    LEFT JOIN Passenger p ON p.id = pit.passenger
+    WHERE p.name LIKE 'Steve Martin' AND town_to LIKE 'London'
