@@ -101,3 +101,46 @@ SELECT fm.member_name, fm.status, SUM(p.amount * p.unit_price) AS costs FROM Fam
 ###Узнать, кто старше всех в семьe.###
 SELECT member_name FROM FamilyMembers
     ORDER BY birthday LIMIT 1
+
+### 19 ###
+###Определить, кто из членов семьи покупал картошку (potato).###
+SELECT DISTINCT fm.status FROM FamilyMembers fm
+    JOIN Payments p ON p.family_member = fm.member_id
+    JOIN Goods g ON g.good_id = p.good
+    WHERE g.good_name LIKE 'potato'
+
+### 20 ###
+###Сколько и кто из семьи потратил на развлечения (entertainment). Вывести статус в семье, имя, сумму.###
+SELECT fm1.status ,fm1.member_name, tmp.col * p1.unit_price AS costs FROM
+    (SELECT fm.member_id, SUM(p.amount) AS col FROM FamilyMembers fm
+        JOIN Payments p ON p.family_member = fm.member_id
+        JOIN Goods g ON g.good_id = p.good
+        JOIN GoodTypes gt ON gt.good_type_id = g.type
+        WHERE gt.good_type_name LIKE 'entertainment'
+        GROUP BY fm.member_id) tmp
+    JOIN FamilyMembers fm1 ON fm1.member_id = tmp.member_id
+    JOIN Payments p1 ON p1.family_member = fm1.member_id
+    JOIN Goods g1 ON g1.good_id = p1.good
+    JOIN GoodTypes gt1 ON gt1.good_type_id = g1.type
+    WHERE gt1.good_type_name LIKE 'entertainment'
+
+### 21 ###
+###Определить товары, которые покупали более 1 раза.###
+SELECT g.good_name FROM Goods g
+    JOIN Payments p ON p.good = g.good_id
+    GROUP BY g.good_name
+    HAVING COUNT(p.payment_id) > 1
+
+### 22 ###
+###Найти имена всех матерей (mother).###
+SELECT member_name FROM FamilyMembers
+    WHERE status LIKE 'mother'
+
+### 23 ###
+###Найдите самый дорогой деликатес (delicacies) и выведите его стоимость.###
+SELECT g.good_name, p.unit_price FROM Payments p
+    JOIN Goods g ON g.good_id = p.good
+    JOIN GoodTypes gt ON gt.good_type_id = g.type
+    WHERE gt.good_type_name LIKE 'delicacies'
+    ORDER BY p.unit_price DESC
+    LIMIT 1
