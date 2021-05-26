@@ -96,3 +96,8 @@ SELECT fm.member_name, fm.status, SUM(p.amount * p.unit_price) AS costs FROM Fam
     JOIN Payments p ON p.family_member = fm.member_id
     WHERE YEAR(p.date) = 2005
     GROUP BY fm.member_id
+
+### 18 ###
+###Узнать, кто старше всех в семьe.###
+SELECT member_name FROM FamilyMembers
+    ORDER BY birthday LIMIT 1
