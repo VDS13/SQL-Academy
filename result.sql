@@ -151,3 +151,59 @@ SELECT fm.member_name, SUM(p.amount * p.unit_price) AS costs FROM FamilyMembers 
     JOIN Payments p ON p.family_member = fm.member_id
     WHERE YEAR(p.date) = 2005 AND MONTH(p.date) = 6
     GROUP BY fm.member_id
+
+### 25 ###
+###Определить, какие товары имеются в таблице Goods, но не покупались в течение 2005 года.###
+SELECT good_name FROM Goods
+WHERE good_name NOT IN (
+    SELECT g.good_name FROM Payments p
+        JOIN Goods g ON g.good_id = p.good
+        WHERE YEAR(p.date) = 2005
+        GROUP BY g.good_name)
+
+### 26 ###
+###Определить группы товаров, которые не приобретались в 2005 году.###
+SELECT good_type_name FROM GoodTypes
+WHERE good_type_name NOT IN (
+    SELECT gt.good_type_name FROM Payments p
+        JOIN Goods g ON g.good_id = p.good
+        JOIN GoodTypes gt ON gt.good_type_id = g.type
+        WHERE YEAR(p.date) = 2005
+        GROUP BY gt.good_type_id)
+
+### 27 ###
+###Узнать, сколько потрачено на каждую из групп товаров в 2005 году. Вывести название группы и сумму.###
+SELECT gt.good_type_name, SUM(tmp.col * tmp.unit_price) AS costs FROM
+    (SELECT good, unit_price, SUM(amount) AS col FROM Payments
+        WHERE YEAR(date) = 2005
+        GROUP BY good, unit_price) tmp
+    JOIN Goods g ON g.good_id = tmp.good
+    JOIN GoodTypes gt ON gt.good_type_id = g.type
+    GROUP BY gt.good_type_name
+
+### 28 ###
+###Сколько рейсов совершили авиакомпании с Ростова (Rostov) в Москву (Moscow) ?.###
+SELECT COUNT(*) AS count FROM Trip
+    WHERE town_from LIKE 'Rostov' AND town_to LIKE 'Moscow'
+
+### 29 ###
+###Выведите имена пассажиров улетевших в Москву (Moscow) на самолете TU-134.###
+SELECT DISTINCT p.name FROM Passenger p 
+    JOIN Pass_in_trip pit ON pit.passenger = p.id
+    JOIN Trip t ON t.id = pit.trip
+    WHERE t.plane LIKE 'TU-134' AND t.town_to LIKE 'Moscow'
+
+### 30 ###
+###Выведите нагруженность (число пассажиров) каждого рейса (trip). Результат вывести в отсортированном виде по убыванию нагруженности.###
+SELECT trip, COUNT(*) AS count FROM Pass_in_trip
+    GROUP BY trip
+    ORDER BY COUNT(*) DESC
+
+### 31 ###
+###Вывести всех членов семьи с фамилией Quincey.###
+SELECT * FROM FamilyMembers
+    WHERE member_name LIKE '%Quincey'
+
+### 32 ###
+###Вывести средний возраст людей (в годах), хранящихся в базе данных. Результат округлите до целого в меньшую сторону.###
+SELECT FLOOR(AVG(DATEDIFF(NOW(),birthday))/365) - 1 AS age FROM FamilyMembers
