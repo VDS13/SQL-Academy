@@ -259,5 +259,49 @@ SELECT start_pair FROM Timepair
 
 ### 42 ###
 ###Сколько времени обучающийся будет находиться в школе, учась со 2-го по 4-ый уч. предмет ?###
-SELECT start_pair FROM Timepair
-    WHERE id = 4
+SELECT TIMEDIFF((SELECT end_pair FROM Timepair WHERE id = 4),
+                (SELECT start_pair FROM Timepair WHERE id = 2)) AS time
+
+### 43 ###
+###Выведите фамилии преподавателей, которые ведут физическую культуру (Physical Culture). Остортируйте преподавателей по фамилии.###
+SELECT t.last_name FROM Subject s
+    JOIN Schedule sch ON sch.subject = s.id 
+    JOIN Teacher t ON t.id = sch.teacher
+    WHERE s.name LIKE 'Physical Culture'
+    ORDER BY t.last_name
+
+### 44 ###
+###Найдите максимальный возраст (колич. лет) среди обучающихся 10 классов ?###
+SELECT MAX(FLOOR(DATEDIFF(NOW(),s.birthday)/365)) AS max_year FROM Student_in_class sic
+    JOIN Class c ON c.id = sic.class
+    JOIN Student s ON s.id = sic.student
+    WHERE c.name LIKE '10%'
+
+### 45 ###
+###Какой(ие) кабинет(ы) пользуются самым большим спросом?###
+SELECT classroom FROM Schedule
+    GROUP BY classroom
+    HAVING COUNT(classroom) = (SELECT MAX(tmp.col) AS max FROM 
+    (SELECT classroom, COUNT(classroom) AS col FROM Schedule
+    GROUP BY classroom
+    ORDER BY classroom) tmp )
+
+### 46 ###
+###В каких классах введет занятия преподаватель "Krauze" ?###
+SELECT DISTINCT c.name FROM Class c
+    JOIN Schedule sch ON sch.class = c.id
+    JOIN Teacher t ON t.id = sch.teacher
+    WHERE t.last_name LIKE 'Krauze'
+
+### 47 ###
+###Сколько занятий провел Krauze 30 августа 2019 г.?###
+SELECT COUNT(*) AS count FROM Schedule sch
+    JOIN Teacher t ON t.id = sch.teacher
+    WHERE t.last_name LIKE 'Krauze' AND sch.date = '2019-08-30T00:00:00.000Z'
+
+### 48 ###
+###Выведите заполненность классов в порядке убывания.###
+SELECT c.name, COUNT(c.name) AS count FROM Student_in_class sic
+    JOIN Class c ON sic.class = c.id
+    GROUP BY c.name
+    ORDER BY COUNT(c.name) DESC
