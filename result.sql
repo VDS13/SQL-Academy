@@ -207,3 +207,57 @@ SELECT * FROM FamilyMembers
 ### 32 ###
 ###Вывести средний возраст людей (в годах), хранящихся в базе данных. Результат округлите до целого в меньшую сторону.###
 SELECT FLOOR(AVG(DATEDIFF(NOW(),birthday))/365) - 1 AS age FROM FamilyMembers
+
+### 33 ###
+###Найдите среднюю стоимость икры. В базе данных хранятся данные о покупках красной (red caviar) и черной икры (black caviar).###
+SELECT AVG(tmp.unit_price) AS cost FROM     
+    (SELECT DISTINCT p.unit_price FROM Payments p
+        JOIN Goods g ON g.good_id = p.good
+        WHERE g.good_name LIKE 'black caviar' OR g.good_name LIKE 'red caviar') tmp
+
+### 34 ###
+###Сколько всего 10-ых классов.###
+SELECT COUNT(*) AS count FROM Class
+    WHERE name LIKE '10%'
+
+### 35 ###
+###Сколько различных кабинетов школы использовались 2.09.2019 в образовательных целях ?###
+SELECT COUNT(class) AS count FROM Schedule
+    WHERE date = '2019-09-02T00:00:00.000Z'
+
+### 36 ###
+###Выведите информацию об обучающихся живущих на улице Пушкина (ul. Pushkina)?###
+SELECT * FROM Student
+    WHERE address LIKE '%ul. Pushkina%'
+
+### 37 ###
+###Сколько лет самому молодому обучающемуся ?###
+SELECT MIN(FLOOR(DATEDIFF(NOW(),birthday)/365)) AS year FROM Student
+
+### 38 ###
+###Сколько Анн (Anna) учится в школе ?###
+SELECT COUNT(*) AS count FROM Student
+    WHERE first_name LIKE 'Anna'
+
+### 39 ###
+###Сколько обучающихся в 10 B классе ?###
+SELECT COUNT(c.name) AS count FROM Student_in_class sic
+    JOIN Class c ON c.id = sic.class
+    WHERE c.name LIKE '10 B'
+
+### 40 ###
+###Выведите название предметов, которые преподает Ромашкин П.П. (Romashkin P.P.) ?###
+SELECT s.name AS subjects FROM Subject s
+    JOIN Schedule sch ON sch.subject = s.id 
+    JOIN Teacher t ON t.id = sch.teacher
+    WHERE t.last_name LIKE 'Romashkin' AND t.first_name LIKE 'P%' AND t.middle_name LIKE 'P%'
+
+### 41 ###
+###Во сколько начинается 4-ый учебный предмет по расписанию ?###
+SELECT start_pair FROM Timepair
+    WHERE id = 4
+
+### 42 ###
+###Сколько времени обучающийся будет находиться в школе, учась со 2-го по 4-ый уч. предмет ?###
+SELECT start_pair FROM Timepair
+    WHERE id = 4
